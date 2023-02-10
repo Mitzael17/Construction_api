@@ -1,6 +1,6 @@
 <?php
 
-namespace core\controllers;
+namespace core\controllers\base;
 
 use core\exceptions\RouteException;
 

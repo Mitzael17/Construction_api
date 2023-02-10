@@ -1,9 +1,8 @@
 <?php
 
-namespace core\controllers;
+namespace core\controllers\base;
 
 use core\exceptions\RouteException;
-use core\traits\SingleTon;
 
 class RouteController extends BaseController
 {
@@ -27,11 +26,25 @@ class RouteController extends BaseController
 
         if(empty($urlArr[0])) throw new RouteException('The route is invalid. Parameters are empty', 404);
 
-        $this->controller = ROUTES['controllers'] . ucfirst($urlArr[0]) . 'Controller';
+        if($urlArr[0] === ADMIN_PATH) {
+
+            array_shift($urlArr);
+
+            if(empty($urlArr[0])) throw new RouteException('The route is invalid. Parameters are empty', 404);
+
+            $this->controller = ROUTES['admin']['controllers'] . ucfirst($urlArr[0]) . 'Controller';
+
+
+        } else {
+
+            $this->controller = ROUTES['user']['controllers'] . ucfirst($urlArr[0]) . 'Controller';
+
+        }
 
         array_shift($urlArr);
 
         $this->args = $urlArr;
+
 
 
     }

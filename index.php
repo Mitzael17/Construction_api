@@ -9,7 +9,7 @@ const ACCESS = true;
 require_once 'config.php';
 require_once 'core/settings/internal_settings.php';
 
-use core\controllers\RouteController;
+use core\controllers\base\RouteController;
 use core\exceptions\RouteException;
 
 try {

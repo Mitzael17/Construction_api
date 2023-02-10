@@ -1,6 +1,6 @@
 <?php
 
-namespace core\traits;
+namespace core\controllers\base;
 
 trait BaseMethods
 {

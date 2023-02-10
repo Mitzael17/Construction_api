@@ -4,7 +4,7 @@ namespace core\exceptions;
 
 
 
-use core\traits\BaseMethods;
+use core\controllers\base\BaseMethods;
 
 class RouteException extends \Exception
 {
