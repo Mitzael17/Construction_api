@@ -1,6 +1,6 @@
 <?php
 
-namespace core\base\models;
+namespace core\models\base;
 
 use core\exceptions\DbException;
 

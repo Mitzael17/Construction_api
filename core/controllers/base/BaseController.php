@@ -19,7 +19,7 @@ abstract class BaseController
 
             $object= new \ReflectionMethod($controller, 'inputData');
 
-            $object->invoke(new $controller);
+            $object->invoke(new $controller, $this->args);
 
         }
         catch(\ReflectionException $error) {
