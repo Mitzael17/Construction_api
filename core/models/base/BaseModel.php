@@ -105,7 +105,35 @@ abstract class BaseModel
 
         }
 
+        foreach ($result as $key => $value) {
+
+            if(!is_array($value) || count($value) > 1) continue;
+
+            $is_empty_array = true;
+
+            foreach ($value[0] as $item) {
+
+                if(!empty($item)) $is_empty_array = false;
+
+            }
+
+            if($is_empty_array) $result[$key] = [];
+
+        }
+
         return $result;
+    }
+
+    protected function showTables() {
+
+        return $this->query("SHOW TABLES");
+
+    }
+
+    protected function showColumns($table) {
+
+        return $this->query("SHOW COLUMNS FROM $table");
+
     }
 
 }

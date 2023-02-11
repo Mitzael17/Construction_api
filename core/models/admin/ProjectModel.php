@@ -70,4 +70,123 @@ class ProjectModel extends BaseModel
         return $result;
 
     }
+
+    public function createProject($data) {
+
+        $fields = '(';
+        $values = 'VALUES(';
+
+        foreach($data as $key => $value) {
+
+            $fields .= "`$key`, ";
+            $values .= "'$value', ";
+
+        }
+
+        $fields = rtrim($fields, ', ') . ') ';
+        $values = rtrim($values, ', ') . ') ';
+
+        $query = "INSERT INTO projects $fields $values";
+
+        return $this->query($query, 'u', true);
+
+    }
+
+    public function updateProject($id, $data) {
+
+        $update = 'SET ';
+
+        foreach ($data as $key => $value) $update .= "`$key`='$value', ";
+
+        $update = rtrim($update, ', ');
+
+        $query = "UPDATE projects $update WHERE id=$id";
+
+        $this->query($query, 'u');
+
+        return true;
+
+    }
+
+    public function createComments($data) {
+
+        $fields = '(';
+        $values = '';
+
+        foreach ($data as $key => $arr) {
+
+            $values .= '(';
+
+            foreach($arr as $name_field => $value) {
+
+                if($key === 0) $fields .= "`$name_field`, ";
+
+                $values .= "'$value', ";
+
+            }
+
+            $values = rtrim($values, ', ') . '), ';
+
+        }
+
+        $fields = rtrim($fields, ', ') . ')';
+        $values = rtrim($values, ', ');
+
+        $query = "INSERT INTO comments $fields VALUES $values";
+
+        return $this->query($query, 'u', true);
+
+    }
+
+    public function updateComments($data) {
+
+        foreach ($data as $arr) {
+
+            $query = 'UPDATE comments SET ';
+
+            $where = 'WHERE ';
+
+            foreach ($arr as $key => $value) {
+
+                if($key === 'id') {
+
+                    $where .= "id=$value";
+
+                    continue;
+                }
+
+                $query .= "`$key`='$value', ";
+
+            }
+
+            $query = rtrim($query, ', ') . $where;
+
+            $this->query($query, 'u');
+
+        }
+
+        return true;
+
+    }
+
+    public function removeComments($data) {
+
+        $where = 'WHERE ' . array_reduce($data, function ($ac, $cur) {
+
+            $id = $cur['id'];
+
+            return $ac . "id='$id' OR ";
+
+        }, '');
+
+        $where = rtrim($where ,' OR ');
+
+        $query = "DELETE FROM comments $where";
+
+        $this->query($query, 'd');
+
+        return true;
+
+    }
+
 }

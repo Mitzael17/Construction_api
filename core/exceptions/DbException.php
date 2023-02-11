@@ -3,7 +3,7 @@
 namespace core\exceptions;
 
 
-use core\traits\BaseMethods;
+use core\controllers\base\BaseMethods;
 
 class DbException extends \Exception
 {
@@ -18,6 +18,7 @@ class DbException extends \Exception
 
         $response = ['status' => 'error', 'message' => $message];
 
+        http_response_code($code);
         exit(json_encode($response));
 
     }

@@ -3,10 +3,9 @@
 namespace core\exceptions;
 
 
-
 use core\controllers\base\BaseMethods;
 
-class RouteException extends \Exception
+class ApiException extends \Exception
 {
 
     use BaseMethods;
@@ -16,13 +15,14 @@ class RouteException extends \Exception
 
         parent::__construct($message, $code);
 
-        $this->writeLog('routeLogs.txt', "\r\n\r\n File " . $this->getFile() . ' In line ' . $this->getLine() . " was error \r\n The error message - $message. \r\n The error code - $code");
+        $this->writeLog('apiLogs.txt', "\r\n\r\n File " . $this->getFile() . ' In line ' . $this->getLine() . " was error \r\n The error message - $message. \r\n The error code - $code");
 
         $response = ['status' => 'error', 'message' => $message];
 
         http_response_code($code);
 
         exit(json_encode($response));
+
     }
 
 }
