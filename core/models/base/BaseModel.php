@@ -45,4 +45,67 @@ abstract class BaseModel
 
     }
 
+    protected function separateData($data) {
+
+        $result = [];
+
+        $index = 0;
+        $stop_tables_array = [];
+
+        foreach ($data as $arr) {
+
+            foreach ($arr as $key => $value) {
+
+                if(preg_match('/^TABLE_\w+_TABLE_/', $key)) {
+
+                    [$table, $key] = explode('_TABLE_', $key);
+                    $table = str_replace('TABLE_', '', $table);
+
+                    if(array_search($table, $stop_tables_array) !== false) continue;
+
+                    if(!isset($result[$table])) $result[$table] = [];
+
+                    $last_id = count($result[$table]);
+
+                    if($last_id > 0) $last_id--;
+
+                    if($key === 'id' && isset($result[$table][$last_id])
+                        && isset($result[$table][$last_id]['id']) && $result[$table][$last_id]['id'] === $value) {
+
+                        $stop_tables_array[] = $table;
+
+                        if(isset($result[$table][$index])) array_pop($result[$table]);
+
+                        continue;
+
+                    } elseif(
+                        $key === 'id' && isset($result[$table][$last_id])
+                        && isset($result[$table][$last_id - 1]['id']) && $result[$table][$last_id - 1]['id'] === $value
+                    ) {
+                        $stop_tables_array[] = $table;
+
+                        if(isset($result[$table][$index])) array_pop($result[$table]);
+
+                        continue;
+                    }
+
+                    if(!isset($result[$table][$index])) $result[$table][$index] = [];
+
+                    $result[$table][$index][$key] = $value;
+
+                    continue;
+
+                }
+
+                $result[$key] = $value;
+
+            }
+
+            $index++;
+
+        }
+
+        return $result;
+    }
+
 }

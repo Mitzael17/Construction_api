@@ -28,7 +28,9 @@ class ProjectsController extends BaseAdmin
 
         if(!empty($id)) {
 
+            $data = $this->model->getProject($id);
 
+            exit(json_encode($data));
 
         }
 
