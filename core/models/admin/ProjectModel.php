@@ -23,19 +23,25 @@ class ProjectModel extends BaseModel
         $order = !empty($data['sort']) && isset($sortArr[$data['sort']]) ? 'ORDER BY ' . $sortArr[$data['sort']] : '';
         $search = !empty($data['search']) ? $data['search'] : '';
         $status_id = !empty($data['status_id']) ? $data['status_id'] : '';
+        $client_id = !empty($data['client_id']) ? $data['client_id'] : '';
 
         $where = '';
         $join = 'INNER JOIN project_status as ps ON ps.id=p.project_status_id ';
         $join .=  'INNER JOIN services as s ON s.id=p.service_id ';
         $join .= 'INNER JOIN clients as c ON c.id=p.client_id';
 
-        if(!empty($status_id) || !empty($search)) {
+        if(!empty($status_id) || !empty($search) || !empty($client_id)) {
 
             $where = 'WHERE ';
 
             if(!empty($status_id)) {
                 $where .= "project_status_id=$status_id AND ";
             }
+
+            if(!empty($client_id)) {
+                $where .= "client_id=$client_id AND ";
+            }
+
             if(!empty($search)) $where .= "p.name LIKE '%$search%'";
 
             $where =  rtrim($where, ' AND ');
@@ -73,20 +79,9 @@ class ProjectModel extends BaseModel
 
     public function createProject($data) {
 
-        $fields = '(';
-        $values = 'VALUES(';
+        $values = $this->createInsertValues($data);
 
-        foreach($data as $key => $value) {
-
-            $fields .= "`$key`, ";
-            $values .= "'$value', ";
-
-        }
-
-        $fields = rtrim($fields, ', ') . ') ';
-        $values = rtrim($values, ', ') . ') ';
-
-        $query = "INSERT INTO projects $fields $values";
+        $query = "INSERT INTO projects $values";
 
         return $this->query($query, 'u', true);
 
@@ -94,11 +89,7 @@ class ProjectModel extends BaseModel
 
     public function updateProject($id, $data) {
 
-        $update = 'SET ';
-
-        foreach ($data as $key => $value) $update .= "`$key`='$value', ";
-
-        $update = rtrim($update, ', ');
+        $update = $this->createUpdate($data);
 
         $query = "UPDATE projects $update WHERE id=$id";
 

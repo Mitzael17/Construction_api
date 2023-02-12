@@ -11,4 +11,10 @@ trait BaseMethods
 
     }
 
+    public function createAliasForImage($image) {
+
+        return $this->protocol . '://' . $_SERVER['SERVER_NAME'] . PATH . UPLOAD_DIR . $image;
+
+    }
+
 }

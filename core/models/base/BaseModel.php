@@ -136,4 +136,70 @@ abstract class BaseModel
 
     }
 
+    protected function createUpdate($data) {
+
+        $update = 'SET ';
+
+        foreach ($data as $key => $value) $update .= "`$key`='$value', ";
+
+        $update = rtrim($update, ', ');
+
+        return $update;
+
+    }
+
+    protected function createInsertValues($data) {
+
+        $fields = '(';
+        $values = 'VALUES(';
+
+        foreach($data as $key => $value) {
+
+            $fields .= "`$key`, ";
+            $values .= "'$value', ";
+
+        }
+
+        $fields = rtrim($fields, ', ') . ') ';
+        $values = rtrim($values, ', ') . ') ';
+
+        return "$fields $values";
+
+    }
+
+    public function delete(string $table, array $arr_id) {
+
+        $where = array_reduce($arr_id, function($ac, $id) {
+
+            return "$ac id='$id' OR ";
+
+        }, 'WHERE ');
+
+        $where = rtrim($where, ' OR ');
+
+        $this->query("DELETE FROM $table $where", 'd');
+
+        return true;
+
+    }
+
+    public function checkFkRelations(int $id, array $tables) {
+
+        $result = [];
+
+        foreach ($tables as $table_info) {
+
+            $foreignKey = $table_info['foreign_key'];
+            $table = $table_info['table'];
+
+            $response = $this->query("SELECT * FROM $table WHERE `$foreignKey`='$id' LIMIT 1");
+
+            if(!empty($response)) $result[$table] = true;
+
+        }
+
+        return $result;
+
+    }
+
 }

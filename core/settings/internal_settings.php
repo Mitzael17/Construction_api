@@ -16,6 +16,8 @@ const ROUTES = [
 
 const ADMIN_PATH = 'admin';
 
+const UPLOAD_DIR = 'uploads/';
+
 const DEFAULT_STATUS_ID = 1;
 
 function autoloadClasses($classname) {

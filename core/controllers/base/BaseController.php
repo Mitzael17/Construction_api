@@ -9,7 +9,9 @@ abstract class BaseController
 
     protected $controller;
     protected $args;
+    protected $protocol;
 
+    use BaseMethods;
 
     public function route() {
 

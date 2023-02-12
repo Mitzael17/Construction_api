@@ -3,7 +3,6 @@
 namespace core\controllers\admin;
 
 use core\exceptions\ApiException;
-use core\exceptions\RouteException;
 use core\models\admin\ProjectModel;
 
 class ProjectsController extends BaseAdmin
@@ -15,7 +14,7 @@ class ProjectsController extends BaseAdmin
 
         $method = $this->method;
 
-        if(!method_exists($this, $method)) throw new RouteException('The url is invalid.', 404);
+        if(!method_exists($this, $method)) throw new ApiException('The API doesn\'t support the method!', 400);
 
         $this->model = ProjectModel::instance();
 
@@ -41,7 +40,6 @@ class ProjectsController extends BaseAdmin
         exit(json_encode($data));
 
     }
-
 
     private function post($args) {
 
@@ -140,6 +138,18 @@ class ProjectsController extends BaseAdmin
         http_response_code(201);
 
         $data = ['id' => $id];
+
+        exit(json_encode($data));
+
+    }
+
+    private function delete() {
+
+        $arr_id = $this->getDeleteArrId();
+
+        $this->model->delete('projects', $arr_id);
+
+        $data = ['status' => 'success'];
 
         exit(json_encode($data));
 

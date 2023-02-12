@@ -12,7 +12,9 @@ abstract class BaseAdmin extends BaseController
 
     protected function init() {
 
-        $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->method = strtolower($_SERVER['REQUEST_METHOD']);
+
+        $this->protocol = $_SERVER['REQUEST_SCHEME'];
 
     }
 
@@ -58,6 +60,36 @@ abstract class BaseAdmin extends BaseController
         }
 
         return $result;
+    }
+
+    protected function getDeleteArrId() {
+
+        if($this->method !== 'delete') throw new ApiException('the method is only for delete protocol.');
+
+        $arr_parameters = [];
+
+        parse_str($this->getContent(), $arr_parameters );
+
+        return $this->filterData($arr_parameters, [
+            'id' => ['necessary']
+        ])['id'];
+
+    }
+
+    private function getContent() {
+
+        $content = file_get_contents('php://input');
+
+        if (null === $content)
+        {
+            if (0 === strlen(trim($content = file_get_contents('php://input'))))
+            {
+                $content = false;
+            }
+        }
+
+        return $content;
+
     }
 
 }
