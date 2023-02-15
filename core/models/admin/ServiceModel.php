@@ -40,24 +40,5 @@ class ServiceModel extends \core\models\base\BaseModel
 
     }
 
-    public function createService($data) {
-
-        $values = $this->createInsertValues($data);
-
-        $query = "INSERT INTO services $values";
-
-        return $this->query($query, 'u', true);
-
-    }
-
-    public function updateService($id, $data) {
-
-        $update = $this->createUpdate($data);
-
-        $this->query("UPDATE services $update WHERE id=$id", 'u');
-
-        return true;
-
-    }
 
 }

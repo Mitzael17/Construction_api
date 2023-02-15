@@ -71,7 +71,7 @@ class ClientsController extends BaseAdmin
 
             if(empty($data)) throw new ApiException('The data was not provided!', 400);
 
-            $this->model->updateClient($id, $data);
+            $this->model->update('clients', $id, $data);
 
             $data = ['status' => 'success'];
 
@@ -86,7 +86,7 @@ class ClientsController extends BaseAdmin
             'image' => ['optional']
         ]);
 
-        $id = $this->model->createClient($data);
+        $id = $this->model->create('clients', $data);
 
         $data = ['id' => $id];
 

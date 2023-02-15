@@ -77,28 +77,6 @@ class ProjectModel extends BaseModel
 
     }
 
-    public function createProject($data) {
-
-        $values = $this->createInsertValues($data);
-
-        $query = "INSERT INTO projects $values";
-
-        return $this->query($query, 'u', true);
-
-    }
-
-    public function updateProject($id, $data) {
-
-        $update = $this->createUpdate($data);
-
-        $query = "UPDATE projects $update WHERE id=$id";
-
-        $this->query($query, 'u');
-
-        return true;
-
-    }
-
     public function createComments($data) {
 
         $fields = '(';

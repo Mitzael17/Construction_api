@@ -38,4 +38,5 @@ class AdminModel extends \core\models\base\BaseModel
         return $result;
 
     }
+
 }

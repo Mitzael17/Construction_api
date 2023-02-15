@@ -46,24 +46,4 @@ class ClientModel extends \core\models\base\BaseModel
 
     }
 
-    public function createClient($data) {
-
-        $values = $this->createInsertValues($data);
-
-        $query = "INSERT INTO clients $values";
-
-        return $this->query($query, 'u', true);
-
-    }
-
-    public function updateClient($id, $data) {
-
-        $update = $this->createUpdate($data);
-
-        $this->query("UPDATE clients $update WHERE id=$id", 'u');
-
-        return true;
-
-    }
-
 }

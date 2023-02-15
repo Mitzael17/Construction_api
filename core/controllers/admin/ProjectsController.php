@@ -114,7 +114,7 @@ class ProjectsController extends BaseAdmin
             
             if(empty($new_comment_args) && empty($edited_comment_args) && empty($removed_comment_args) && empty($project_args)) throw new ApiException('The request doesn\'t have any information');
 
-            if(!empty($project_args)) $this->model->updateProject($id, $project_args);
+            if(!empty($project_args)) $this->model->update('projects', $id, $project_args);
             if(!empty($new_comment_args)) $this->model->createComments($new_comment_args);
             if(!empty($edited_comment_args)) $this->model->updateComments($edited_comment_args);
             if(!empty($removed_comment_args)) $this->model->removeComments($removed_comment_args);
@@ -133,7 +133,7 @@ class ProjectsController extends BaseAdmin
             'creation_date' => ['optional', date('y-m-d')],
         ]);
 
-        $id = $this->model->createProject($args);
+        $id = $this->model->create('projects', $args);
 
         http_response_code(201);
 

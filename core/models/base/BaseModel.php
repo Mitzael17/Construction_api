@@ -167,6 +167,26 @@ abstract class BaseModel
 
     }
 
+    public function update($table, $id, $data) {
+
+        $update = $this->createUpdate($data);
+
+        $this->query("UPDATE $table $update WHERE id=$id", 'u');
+
+        return true;
+
+    }
+
+    public function create($table, $data) {
+
+        $values = $this->createInsertValues($data);
+
+        $query = "INSERT INTO $table $values";
+
+        return $this->query($query, 'u', true);
+
+    }
+
     public function delete(string $table, array $arr_id) {
 
         $where = array_reduce($arr_id, function($ac, $id) {
@@ -199,6 +219,16 @@ abstract class BaseModel
         }
 
         return $result;
+
+    }
+
+    public function checkUniqueField($table, $field, $value) {
+
+        $result = $this->query("SELECT * FROM $table WHERE `$field`='$value' LIMIT 1");
+
+        if(empty($result)) return false;
+
+        return true;
 
     }
 

@@ -52,7 +52,9 @@ class ServicesController extends BaseAdmin
 
             if(empty($data)) throw new ApiException('The data was not provided!', 400);
 
-            $this->model->updateService($id, $data);
+            if($this->model->checkUniqueField('services', 'name', $data['name'])) throw new ApiException('The name is already busy');
+
+            $this->model->update('services', $id, $data);
 
             $data = ['status' => 'success'];
 
@@ -64,7 +66,9 @@ class ServicesController extends BaseAdmin
             'name' => ['necessary']
         ]);
 
-        $id = $this->model->createService($data);
+        if($this->model->checkUniqueField('services', 'name', $data['name'])) throw new ApiException('The name is already busy');
+
+        $id = $this->model->create('services', $data);
 
         $data = ['id' => $id];
 
