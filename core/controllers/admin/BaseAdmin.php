@@ -4,17 +4,32 @@ namespace core\controllers\admin;
 
 use core\controllers\base\BaseController;
 use core\exceptions\ApiException;
+use core\libraries\Firebase\JWT;
+use core\libraries\Firebase\Key;
+use core\models\base\BaseModel;
 
 abstract class BaseAdmin extends BaseController
 {
 
     protected $method;
 
+    protected $user = [];
+
     protected function init() {
 
         $this->method = strtolower($_SERVER['REQUEST_METHOD']);
 
         $this->protocol = $_SERVER['REQUEST_SCHEME'];
+
+        $userData = $this->getUserDataFromToken();
+
+        $data = BaseModel::instance()->query("SELECT r.*, a.blocked FROM roles as r INNER JOIN admins as a ON a.role_id=r.id WHERE a.id='$userData->id'");
+
+        if(empty($data)) throw new ApiException('Auth error', 403);
+
+        $this->user = $data[0];
+
+        if($this->user['blocked']) throw new ApiException('The account is blocked', 403);
 
     }
 
@@ -92,4 +107,46 @@ abstract class BaseAdmin extends BaseController
 
     }
 
+    protected function checkRole($flag) {
+
+        if(!$this->user[$flag]) throw new ApiException('Access denied', 403);
+
+    }
+
+    protected function generateJWT($id) {
+
+        $payload = [
+            'iss' => $_SERVER['HTTP_HOST'],
+            'aud' => $_SERVER['HTTP_HOST'],
+            'exp' => time() + 360000,
+            'data' => [
+                'id' => $id,
+            ],
+        ];
+        return JWT::encode($payload, JWT_KEY, 'HS256');
+
+    }
+
+    protected function getUserDataFromToken() {
+
+
+        if(!isset($_SERVER['HTTP_AUTHORIZATION'])) throw new ApiException('you are not logged in', 403);
+
+        $token = explode(' ', $_SERVER['HTTP_AUTHORIZATION']);
+
+        if(!isset($token[1])) throw new ApiException('you are not logged in', 403);
+
+        try {
+
+            $decoded = JWT::decode($token[1], new Key(JWT_KEY,'HS256'));
+
+        } catch (\Exception $e) {
+
+            throw new ApiException('you are not logged in', 403);
+
+        }
+
+        return $decoded->data;
+
+    }
 }

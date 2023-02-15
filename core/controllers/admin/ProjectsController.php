@@ -25,6 +25,8 @@ class ProjectsController extends BaseAdmin
 
     private function get($args) {
 
+        $this->checkRole('project_watching');
+
         $id = !empty($args[0]) ? $args[0] : '';
 
         if(!empty($id)) {

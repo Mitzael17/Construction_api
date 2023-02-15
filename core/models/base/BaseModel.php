@@ -2,10 +2,13 @@
 
 namespace core\models\base;
 
+use core\controllers\base\SingleTon;
 use core\exceptions\DbException;
 
-abstract class BaseModel
+class BaseModel
 {
+
+    use SingleTon;
 
     protected $db;
 
