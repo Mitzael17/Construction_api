@@ -173,6 +173,7 @@ class AdminsController extends BaseAdmin
             return $ac . "$name, ";
         }, ''), ', ');
 
+        $a=1;
 
         $this->model->delete('admins', $arr_id);
 
