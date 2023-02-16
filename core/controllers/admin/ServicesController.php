@@ -42,6 +42,8 @@ class ServicesController extends BaseAdmin
 
     private function post($args) {
 
+        $this->checkAccess('service_edit');
+
         $id = isset($args[0]) ? $args[0] : '';
 
         if(!empty($id)) {
@@ -55,6 +57,10 @@ class ServicesController extends BaseAdmin
             if($this->model->checkUniqueField('services', 'name', $data['name'])) throw new ApiException('The name is already busy');
 
             $this->model->update('services', $id, $data);
+
+            $name = $data['name'];
+
+            $this->createLog("$name was updated");
 
             $data = ['status' => 'success'];
 
@@ -70,6 +76,8 @@ class ServicesController extends BaseAdmin
 
         $id = $this->model->create('services', $data);
 
+        $this->createLog('created a new service - ' . $data['name']);
+
         $data = ['id' => $id];
 
         exit(json_encode($data));
@@ -77,6 +85,8 @@ class ServicesController extends BaseAdmin
     }
 
     private function delete() {
+
+        $this->checkAccess('service_edit');
 
         $arr_id = $this->getDeleteArrId();
 
@@ -99,9 +109,21 @@ class ServicesController extends BaseAdmin
             }
 
         }
+
         if(empty($arr_id)) throw new ApiException("The services have projects");
 
+        $order_names = $this->model->getNames('services', $arr_id);
+
+        $toBe = count($order_names) > 1 ? 'were' : 'was';
+
+        $order_names = rtrim(array_reduce($order_names, function ($ac, $cur) {
+            $name = $cur['name'];
+            return $ac . "$name, ";
+        }, ''), ', ');
+
         $this->model->delete('services', $arr_id);
+
+        $this->createLog("$order_names $toBe removed from services");
 
         if(empty($not_deleted_service_id)) $data = ['status' => 'success'];
         else $data = ['status' => 'partial success', 'not removed' => $not_deleted_service_id];

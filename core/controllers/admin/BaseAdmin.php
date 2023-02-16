@@ -14,6 +14,7 @@ abstract class BaseAdmin extends BaseController
     protected $method;
 
     protected $user = [];
+    protected $base_model;
 
     protected function init() {
 
@@ -21,9 +22,11 @@ abstract class BaseAdmin extends BaseController
 
         $this->protocol = $_SERVER['REQUEST_SCHEME'];
 
+        $this->base_model = BaseModel::instance();
+
         $userData = $this->getUserDataFromToken();
 
-        $data = BaseModel::instance()->query("SELECT r.*, a.blocked FROM roles as r INNER JOIN admins as a ON a.role_id=r.id WHERE a.id='$userData->id'");
+        $data = $this->base_model->query("SELECT r.*, a.blocked, a.id FROM roles as r INNER JOIN admins as a ON a.role_id=r.id WHERE a.id='$userData->id' AND password='$userData->password'");
 
         if(empty($data)) throw new ApiException('Auth error', 403);
 
@@ -107,13 +110,15 @@ abstract class BaseAdmin extends BaseController
 
     }
 
-    protected function checkRole($flag) {
+    protected function checkAccess($flag, $return_bool = false) {
+
+        if($return_bool) return (boolean) $this->user[$flag];
 
         if(!$this->user[$flag]) throw new ApiException('Access denied', 403);
 
     }
 
-    protected function generateJWT($id) {
+    protected function generateJWT($id, $password) {
 
         $payload = [
             'iss' => $_SERVER['HTTP_HOST'],
@@ -121,6 +126,7 @@ abstract class BaseAdmin extends BaseController
             'exp' => time() + 360000,
             'data' => [
                 'id' => $id,
+                'password' => $password,
             ],
         ];
         return JWT::encode($payload, JWT_KEY, 'HS256');
@@ -147,6 +153,18 @@ abstract class BaseAdmin extends BaseController
         }
 
         return $decoded->data;
+
+    }
+
+    protected function createLog(string $message) {
+
+        $data = [];
+
+        $data['admin_id'] = $this->user['id'];
+        $data['date_and_time'] = date('Y-m-d H:i:s');
+        $data['message'] = $message;
+
+        $this->base_model->create('logs', $data);
 
     }
 }

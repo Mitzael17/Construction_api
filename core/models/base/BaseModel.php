@@ -170,6 +170,33 @@ class BaseModel
 
     }
 
+    public function get($table, $id) {
+
+        $where = 'WHERE ';
+
+        if(is_array($id)) {
+
+            foreach ($id as $item) {
+
+                $where .= "id='$item' OR ";
+
+            }
+
+            $where = rtrim($where, 'OR ');
+
+        } else {
+            $where .= "id='$id'";
+        }
+
+
+        $result = $this->query("SELECT * FROM $table $where");
+
+        if(!empty($result)) return $result[0];
+
+        return $result;
+
+    }
+
     public function update($table, $id, $data) {
 
         $update = $this->createUpdate($data);
@@ -232,6 +259,22 @@ class BaseModel
         if(empty($result)) return false;
 
         return true;
+
+    }
+
+    public function getNames($table, $arr_id) {
+
+        $where = 'WHERE ';
+
+        foreach ($arr_id as $id) {
+
+            $where .= "id='$id' OR ";
+
+        }
+
+        $where = rtrim($where, 'OR ');
+
+        return $this->query("SELECT name FROM $table $where");
 
     }
 

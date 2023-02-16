@@ -73,6 +73,9 @@ class ProjectModel extends BaseModel
 
         if(!empty($response)) $result = $this->separateData($response);
 
+       $result['client'] = $result['client'][0];
+       $result['service'] = $result['service'][0];
+
         return $result;
 
     }
@@ -157,5 +160,6 @@ class ProjectModel extends BaseModel
         return true;
 
     }
+
 
 }
