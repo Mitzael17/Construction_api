@@ -2,10 +2,13 @@
 
 namespace core\models\base;
 
+use core\controllers\base\SingleTon;
 use core\exceptions\DbException;
 
-abstract class BaseModel
+class BaseModel
 {
+
+    use SingleTon;
 
     protected $db;
 
@@ -167,6 +170,53 @@ abstract class BaseModel
 
     }
 
+    public function get($table, $id) {
+
+        $where = 'WHERE ';
+
+        if(is_array($id)) {
+
+            foreach ($id as $item) {
+
+                $where .= "id='$item' OR ";
+
+            }
+
+            $where = rtrim($where, 'OR ');
+
+        } else {
+            $where .= "id='$id'";
+        }
+
+
+        $result = $this->query("SELECT * FROM $table $where");
+
+        if(!empty($result)) return $result[0];
+
+        return $result;
+
+    }
+
+    public function update($table, $id, $data) {
+
+        $update = $this->createUpdate($data);
+
+        $this->query("UPDATE $table $update WHERE id=$id", 'u');
+
+        return true;
+
+    }
+
+    public function create($table, $data) {
+
+        $values = $this->createInsertValues($data);
+
+        $query = "INSERT INTO $table $values";
+
+        return $this->query($query, 'u', true);
+
+    }
+
     public function delete(string $table, array $arr_id) {
 
         $where = array_reduce($arr_id, function($ac, $id) {
@@ -199,6 +249,32 @@ abstract class BaseModel
         }
 
         return $result;
+
+    }
+
+    public function checkUniqueField($table, $field, $value) {
+
+        $result = $this->query("SELECT * FROM $table WHERE `$field`='$value' LIMIT 1");
+
+        if(empty($result)) return false;
+
+        return true;
+
+    }
+
+    public function getNames($table, $arr_id) {
+
+        $where = 'WHERE ';
+
+        foreach ($arr_id as $id) {
+
+            $where .= "id='$id' OR ";
+
+        }
+
+        $where = rtrim($where, 'OR ');
+
+        return $this->query("SELECT name FROM $table $where");
 
     }
 

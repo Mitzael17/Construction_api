@@ -73,29 +73,10 @@ class ProjectModel extends BaseModel
 
         if(!empty($response)) $result = $this->separateData($response);
 
+       $result['client'] = $result['client'][0];
+       $result['service'] = $result['service'][0];
+
         return $result;
-
-    }
-
-    public function createProject($data) {
-
-        $values = $this->createInsertValues($data);
-
-        $query = "INSERT INTO projects $values";
-
-        return $this->query($query, 'u', true);
-
-    }
-
-    public function updateProject($id, $data) {
-
-        $update = $this->createUpdate($data);
-
-        $query = "UPDATE projects $update WHERE id=$id";
-
-        $this->query($query, 'u');
-
-        return true;
 
     }
 
@@ -179,5 +160,6 @@ class ProjectModel extends BaseModel
         return true;
 
     }
+
 
 }

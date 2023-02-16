@@ -25,6 +25,8 @@ class ProjectsController extends BaseAdmin
 
     private function get($args) {
 
+        $this->checkAccess('project_watching');
+
         $id = !empty($args[0]) ? $args[0] : '';
 
         if(!empty($id)) {
@@ -42,6 +44,8 @@ class ProjectsController extends BaseAdmin
     }
 
     private function post($args) {
+
+        $this->checkAccess('project_edit');
 
         $id = !empty($args[0]) ? $args[0] : '';
 
@@ -114,10 +118,15 @@ class ProjectsController extends BaseAdmin
             
             if(empty($new_comment_args) && empty($edited_comment_args) && empty($removed_comment_args) && empty($project_args)) throw new ApiException('The request doesn\'t have any information');
 
-            if(!empty($project_args)) $this->model->updateProject($id, $project_args);
+            if(!empty($project_args)) $this->model->update('projects', $id, $project_args);
             if(!empty($new_comment_args)) $this->model->createComments($new_comment_args);
             if(!empty($edited_comment_args)) $this->model->updateComments($edited_comment_args);
             if(!empty($removed_comment_args)) $this->model->removeComments($removed_comment_args);
+
+            if(empty($project_args['name'])) $name = $this->model->getNameProjects([$id]);
+            else $name = $project_args['name'];
+
+            $this->createLog('updated the project - ' . $name);
 
             $data = ['status' => 'success'];
 
@@ -133,7 +142,9 @@ class ProjectsController extends BaseAdmin
             'creation_date' => ['optional', date('y-m-d')],
         ]);
 
-        $id = $this->model->createProject($args);
+        $id = $this->model->create('projects', $args);
+
+        $this->createLog('created a new project - ' . $args['name']);
 
         http_response_code(201);
 
@@ -145,9 +156,23 @@ class ProjectsController extends BaseAdmin
 
     private function delete() {
 
+        $this->checkAccess('project_edit');
+
         $arr_id = $this->getDeleteArrId();
 
+        $order_names = $this->model->getNames('projects', $arr_id);
+
+        $toBe = count($order_names) > 1 ? 'were' : 'was';
+
+        $order_names = rtrim(array_reduce($order_names, function ($ac, $cur) {
+            $name = $cur['name'];
+            return $ac . "$name, ";
+        }, ''), ', ');
+
+
         $this->model->delete('projects', $arr_id);
+
+        $this->createLog("$order_names $toBe removed from projects");
 
         $data = ['status' => 'success'];
 

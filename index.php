@@ -1,8 +1,8 @@
 <?php
 
-//header('Content-type: json/application');
-//header("Access-Control-Allow-Origin: *");
-//header("Access-Control-Allow-Headers: *");
+header('Content-type: json/application');
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
 
 const ACCESS = true;
 

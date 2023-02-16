@@ -14,6 +14,8 @@ class ClientsController extends BaseAdmin
 
         $this->init();
 
+        $this->checkAccess('work_with_clients');
+
         $method = $this->method;
 
         if(!method_exists($this, $method)) throw new ApiException('The API doesn\'t support the method!', 400);
@@ -71,7 +73,11 @@ class ClientsController extends BaseAdmin
 
             if(empty($data)) throw new ApiException('The data was not provided!', 400);
 
-            $this->model->updateClient($id, $data);
+            $this->model->update('clients', $id, $data);
+
+            $name = isset($data['name']) ? $data['name'] : $this->model->getNames('clients', [$id]);
+
+            $this->createLog("$name was updated");
 
             $data = ['status' => 'success'];
 
@@ -86,7 +92,9 @@ class ClientsController extends BaseAdmin
             'image' => ['optional']
         ]);
 
-        $id = $this->model->createClient($data);
+        $id = $this->model->create('clients', $data);
+
+        $this->createLog('created a new client - ' . $data['name']);
 
         $data = ['id' => $id];
 
@@ -120,7 +128,18 @@ class ClientsController extends BaseAdmin
 
         if(empty($arr_id)) throw new ApiException("The clients have projects");
 
+        $order_names = $this->model->getNames('clients', $arr_id);
+
+        $toBe = count($order_names) > 1 ? 'were' : 'was';
+
+        $order_names = rtrim(array_reduce($order_names, function ($ac, $cur) {
+            $name = $cur['name'];
+            return $ac . "$name, ";
+        }, ''), ', ');
+
         $this->model->delete('clients', $arr_id);
+
+        $this->createLog("$order_names $toBe removed from clients");
 
         if(empty($not_deleted_service_id)) $data = ['status' => 'success'];
         else $data = ['status' => 'partial success', 'not removed' => $not_deleted_service_id];
