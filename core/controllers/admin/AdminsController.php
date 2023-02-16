@@ -168,8 +168,6 @@ class AdminsController extends BaseAdmin
 
         $toBe = count($users) > 1 ? 'were' : 'was';
 
-        $a = 1;
-
         $order_names = rtrim(array_reduce($users, function ($ac, $cur) {
             $name = $cur['name'];
             return $ac . "$name, ";
