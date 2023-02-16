@@ -173,8 +173,6 @@ class AdminsController extends BaseAdmin
             return $ac . "$name, ";
         }, ''), ', ');
 
-        $a=1;
-
         $this->model->delete('admins', $arr_id);
 
         $this->createLog("$order_names $toBe removed from admins table");
