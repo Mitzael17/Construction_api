@@ -16,8 +16,11 @@ const ROUTES = [
 const CRYPT_KEY = 'A%D*G-KaPdSgUkXp7w!z%C*F-JaNdRgUq3t6w9z$C&F)J@NcVkYp3s6v9y$B&E)HdRgUkXp2s5v8y/B?JaNdRfUjXn2r5u8x&F)J@NcRfTjWnZr4y$B&E)H@McQeThWm5v8y/B?E(H+MbQeSn2r5u8x/A?D(G+Kb';
 const JWT_KEY = 'JaNdRgUq3t6w9z$C&F)J@NcVkYp3s6v9y$B&E)HdRgUkX';
 
-const ADMIN_PATH = 'admin';
+const LIMIT_ATTEMPTS = 3;
+const DELAY_ATTEMPTS = 3600;
 
+
+const ADMIN_PATH = 'admin';
 const UPLOAD_DIR = 'uploads/';
 
 const DEFAULT_STATUS_ID = 1;
