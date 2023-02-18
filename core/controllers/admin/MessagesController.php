@@ -63,6 +63,8 @@ class MessagesController extends BaseAdmin
 
         $this->model->update('messages', $id, ['message_status_id' => '3']);
 
+        $this->createLog('sent a message to ' . $data['to']);
+
         exit(json_encode(['status' => 'success']));
 
     }

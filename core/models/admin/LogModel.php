@@ -28,7 +28,7 @@ class LogModel extends \core\models\base\BaseModel
 
         $where = '';
 
-        if(!empty($where_value)) $where = rtrim($where_value, 'AND ');
+        if(!empty($where_value)) $where = 'WHERE ' . rtrim($where_value, 'AND ');
 
         $fields = "a.name as TABLE_admin_TABLE_name, a.image as TABLE_admin_TABLE_image, r.name as TABLE_admin_TABLE_role, l.message, l.date_and_time, l.id";
 
