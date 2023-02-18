@@ -19,8 +19,8 @@ class LogModel extends \core\models\base\BaseModel
 
         $where_value = '';
 
-        if(!empty($from)) $where_value .= "l.date_and_time>'$from' AND ";
-        if(!empty($to)) $where_value .= "l.date_and_time<'$to' AND ";
+        if(!empty($from)) $where_value .= "l.date_and_time>='$from' AND ";
+        if(!empty($to)) $where_value .= "l.date_and_time<='$to' AND ";
 
         $join = 'INNER JOIN admins as a ON a.id=l.admin_id INNER JOIN roles as r ON r.id=a.role_id';
 

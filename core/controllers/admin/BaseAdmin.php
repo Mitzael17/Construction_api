@@ -167,4 +167,19 @@ abstract class BaseAdmin extends BaseController
         $this->base_model->create('logs', $data);
 
     }
+
+    protected function sendMessage($to, $subject, $message, $additional_headers = '', $params = '') {
+
+        $from = '';
+
+        $message = wordwrap($message, 70, "\r\n");
+
+        $headers = 'From: ' . $from . "\r\n" .
+            'Reply-To: ' . $from . "\r\n"
+        . $additional_headers;
+
+        mail($to, $subject, $message, $headers, $params);
+
+    }
+
 }
