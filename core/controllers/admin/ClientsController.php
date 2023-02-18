@@ -75,7 +75,7 @@ class ClientsController extends BaseAdmin
 
             $this->model->update('clients', $id, $data);
 
-            $name = isset($data['name']) ? $data['name'] : $this->model->getNames('clients', [$id]);
+            $name = isset($data['name']) ? $data['name'] : $this->model->get('clients', $id)['name'];
 
             $this->createLog("$name was updated");
 

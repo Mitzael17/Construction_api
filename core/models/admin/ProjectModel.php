@@ -59,12 +59,14 @@ class ProjectModel extends BaseModel
 
         $query = "SELECT c.id as TABLE_client_TABLE_id, c.name as TABLE_client_TABLE_name, c.email as TABLE_client_TABLE_email, p.creation_date, 
                   p.end_date, p.name, s.name as TABLE_service_TABLE_name, s.id as TABLE_service_TABLE_id,
-                  ppc.alias, com.date as TABLE_comments_TABLE_date, com.id as TABLE_comments_TABLE_id,com.text as TABLE_comments_TABLE_text 
-                  FROM projects as p 
+                  ppc.alias, com.date as TABLE_comments_TABLE_date, com.id as TABLE_comments_TABLE_id, com.text as TABLE_comments_TABLE_text, 
+                  com.admin_id as TABLE_comments_TABLE_admin_id, a.name as TABLE_comments_TABLE_admin_name, 
+                  a.image as TABLE_comments_TABLE_admin_image FROM projects as p 
                   INNER JOIN clients as c ON c.id=p.client_id 
                   INNER JOIN services as s ON s.id=p.service_id 
                   LEFT JOIN project_page_content as ppc ON ppc.id=project_page_content_id
                   LEFT JOIN comments as com ON com.project_id=p.id
+                  LEFT JOIN admins as a ON a.id=com.admin_id
                   WHERE p.id=$id";
 
         $response = $this->query($query);
