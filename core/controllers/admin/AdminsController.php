@@ -197,8 +197,6 @@ class AdminsController extends BaseAdmin
                 'message' => 'The admin can\'t be removed, because he/she created one or more comments'
             ];
 
-            $a=1;
-
             exit(json_encode($data));
 
         }
