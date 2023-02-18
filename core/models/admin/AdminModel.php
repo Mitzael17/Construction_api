@@ -48,7 +48,7 @@ class AdminModel extends \core\models\base\BaseModel
 
         $where = rtrim($where, 'OR ');
 
-        return $this->query("SELECT a.name, r.priority FROM admins as a INNER JOIN roles as r ON r.id=a.role_id $where");
+        return $this->query("SELECT a.id, a.name, r.priority FROM admins as a INNER JOIN roles as r ON r.id=a.role_id $where");
 
     }
 }

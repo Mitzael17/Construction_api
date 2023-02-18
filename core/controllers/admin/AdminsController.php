@@ -162,7 +162,42 @@ class AdminsController extends BaseAdmin
 
         foreach ($users as $user) {
 
-            if($user['priority'] <= $this->user['priority']) throw new ApiException('Access denied. fdg', 403);
+            if($user['priority'] <= $this->user['priority']) throw new ApiException('Access denied', 403);
+
+        }
+
+        $not_removed = '';
+
+        foreach ($arr_id as $key => $id) {
+
+            $isFk = $this->model->checkFkRelations($id, [['foreign_key' => 'admin_id', 'table' => 'comments']]);
+
+            if(isset($isFk['comments'])) {
+
+                unset($arr_id[$key]);
+
+                foreach ($users as $user_key => $user) {
+
+                    if($user['id'] !== $id) continue;
+
+                    $not_removed .= $user['name'] . ', ';
+
+                    unset($users[$user_key]);
+
+                }
+
+            }
+
+        }
+
+        if(empty($arr_id)) {
+
+            $data = [
+                'status' => 'error',
+                'message' => 'The admin can\'t be removed, because he/she created one or more comments'
+            ];
+
+            exit(json_encode($data));
 
         }
 
@@ -173,9 +208,23 @@ class AdminsController extends BaseAdmin
             return $ac . "$name, ";
         }, ''), ', ');
 
+
         $this->model->delete('admins', $arr_id);
 
         $this->createLog("$order_names $toBe removed from admins table");
+
+        if(!empty($not_removed)) {
+
+            $not_removed = rtrim($not_removed, ', ');
+
+            $data = [
+                'status' => 'partial success',
+                'not_removed' => $not_removed
+            ];
+
+            exit(json_encode($data));
+
+        }
 
         $data = ['status' => 'success'];
 

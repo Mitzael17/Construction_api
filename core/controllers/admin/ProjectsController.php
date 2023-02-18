@@ -69,12 +69,16 @@ class ProjectsController extends BaseAdmin
 
                 foreach ($new_comment_args as $value) {
 
-                    $arr[] = $this->filterData($value, [
+                    $args = $this->filterData($value, [
                         'project_id' => ['optional', $id],
                         'text' => ['necessary'],
                         'date' => ['optional', date('Y-m-d H:i:s')],
                         'edited' => ['optional', 0]
                     ]);
+
+                    $args['admin_id'] = $this->user['id'];
+
+                    $arr[] = $args;
 
                 }
 
