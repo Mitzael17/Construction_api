@@ -222,8 +222,6 @@ class AdminsController extends BaseAdmin
                 'not_removed' => $not_removed
             ];
 
-            $a=1;
-
             exit(json_encode($data));
 
         }
