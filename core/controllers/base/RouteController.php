@@ -18,6 +18,8 @@ class RouteController extends BaseController
 
         $url = $_SERVER['REQUEST_URI'];
 
+        $url = substr($url, strlen(PATH));
+
         $url = trim($url, '/');
 
         if(preg_match('/\?/', $url)) $url = substr($url, 0, strpos($url, '?'));
