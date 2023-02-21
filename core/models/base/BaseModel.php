@@ -170,28 +170,33 @@ class BaseModel
 
     }
 
-    public function get($table, $id) {
+    public function get($table, $id = '') {
 
-        $where = 'WHERE ';
+        $where = '';
 
-        if(is_array($id)) {
+        if(!empty($id)) {
 
-            foreach ($id as $item) {
+            $where .= 'WHERE ';
 
-                $where .= "id='$item' OR ";
+            if(is_array($id)) {
 
+                foreach ($id as $item) {
+
+                    $where .= "id='$item' OR ";
+
+                }
+
+                $where = rtrim($where, 'OR ');
+
+            } else {
+                $where .= "id='$id'";
             }
 
-            $where = rtrim($where, 'OR ');
-
-        } else {
-            $where .= "id='$id'";
         }
-
 
         $result = $this->query("SELECT * FROM $table $where");
 
-        if(!empty($result)) return $result[0];
+        if(!empty($result) && !empty($id)) return $result[0];
 
         return $result;
 

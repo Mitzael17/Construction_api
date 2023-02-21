@@ -94,6 +94,18 @@ abstract class BaseAdmin extends BaseController
 
     }
 
+    protected function getDeleteData() {
+
+        if($this->method !== 'delete') throw new ApiException('the method is only for delete protocol.');
+
+        $arr_parameters = [];
+
+        parse_str($this->getContent(), $arr_parameters );
+
+        return $arr_parameters;
+
+    }
+
     private function getContent() {
 
         $content = file_get_contents('php://input');
