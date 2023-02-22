@@ -53,7 +53,71 @@ class InformationController extends BaseAdmin
                 'social_networks' => ['optional']
             ]);
 
-            foreach ($new_data as $table => $values) $this->base_model->create($table, $values);
+            if(!empty($new_data['phones'])) {
+
+                foreach ($new_data['phones'] as $info) {
+
+                    $info = $this->filterData($info, [
+                        'phone' => ['necessary']
+                    ]);
+
+                    if($this->base_model->checkUniqueField('phones', 'phone', $info['phone'])) throw new ApiException($info['phone'] . ' is duplicated');
+
+                    $this->base_model->create('phones', $info);
+
+                }
+
+            }
+
+            if(!empty($new_data['emails'])) {
+
+                foreach ($new_data['emails'] as $info) {
+
+                    $info = $this->filterData($info, [
+                        'email' => ['necessary']
+                    ]);
+
+                    if($this->base_model->checkUniqueField('emails', 'email', $info['email'])) throw new ApiException($info['email'] . ' is duplicated');
+
+                    $this->base_model->create('emails', $info);
+
+                }
+
+            }
+
+            if(!empty($new_data['addresses'])) {
+
+                foreach ($new_data['addresses'] as $info) {
+
+                    $info = $this->filterData($info, [
+                        'address' => ['necessary']
+                    ]);
+
+                    if($this->base_model->checkUniqueField('addresses', 'address', $info['address'])) throw new ApiException($info['address'] . ' is duplicated');
+
+                    $this->base_model->create('addresses', $info);
+
+                }
+
+            }
+
+            if(!empty($new_data['social_networks'])) {
+
+                foreach ($new_data['social_networks'] as $info) {
+
+                    $info = $this->filterData($info, [
+                       'name' => ['necessary'],
+                        'image' => ['necessary'],
+                        'link' => ['necessary']
+                    ]);
+
+                    $this->base_model->create('social_networks', $info);
+
+                }
+
+            }
+
+            $this->createLog('created a new contact information');
 
         }
 
@@ -66,15 +130,93 @@ class InformationController extends BaseAdmin
                 'social_networks' => ['optional']
             ]);
 
-            foreach ($update_data as $table => $values) {
+            if(!empty($update_data['phones'])) {
 
-                $id = $values['id'];
+                foreach ($update_data['phones'] as $info) {
 
-                unset($values['id']);
+                    $info = $this->filterData($info, [
+                        'id' => ['necessary'],
+                        'phone' => ['necessary']
+                    ]);
 
-                $this->base_model->update($table, $id, $values);
+                    if($this->base_model->checkUniqueField('phones', 'phone', $info['phone'])) throw new ApiException($info['phone'] . ' is duplicated');
+
+                    $id = $info['id'];
+
+                    unset($info['id']);
+
+                    $this->base_model->update('phones', $id, $info);
+
+                }
+
             }
 
+            if(!empty($update_data['emails'])) {
+
+                foreach ($update_data['emails'] as $info) {
+
+                    $info = $this->filterData($info, [
+                        'id' => ['necessary'],
+                        'email' => ['necessary']
+                    ]);
+
+                    if($this->base_model->checkUniqueField('emails', 'email', $info['email'])) throw new ApiException($info['email'] . ' is duplicated');
+
+                    $id = $info['id'];
+
+                    unset($info['id']);
+
+                    $this->base_model->update('emails', $id, $info);
+
+                }
+
+            }
+
+            if(!empty($update_data['addresses'])) {
+
+                foreach ($update_data['addresses'] as $info) {
+
+                    $info = $this->filterData($info, [
+                        'id' => ['necessary'],
+                        'address' => ['necessary']
+                    ]);
+
+                    if($this->base_model->checkUniqueField('addresses', 'address', $info['address'])) throw new ApiException($info['address'] . ' is duplicated');
+
+                    $id = $info['id'];
+
+                    unset($info['id']);
+
+                    $this->base_model->update('addresses', $id, $info);
+
+                }
+
+            }
+
+            if(!empty($update_data['social_networks'])) {
+
+                foreach ($update_data['social_networks'] as $info) {
+
+                    $info = $this->filterData($info, [
+                        'id' => ['necessary'],
+                        'name' => ['optional'],
+                        'image' => ['optional'],
+                        'link' => ['optional']
+                    ]);
+
+                    $id = $info['id'];
+
+                    unset($info['id']);
+
+                    if(empty($info)) continue;
+
+                    $this->base_model->update('social_networks', $id, $info);
+
+                }
+
+            }
+
+            $this->createLog('updated a contact information');
 
         }
 
@@ -86,17 +228,18 @@ class InformationController extends BaseAdmin
 
         $this->checkAccess('work_with_contact_information');
 
-         $data = $this->getDeleteData();
-
-         $data = $this->filterData($data, [
-             'emails' => ['optional'],
-             'phones' => ['optional'],
-             'addresses' => ['optional']
-         ]);
+        $data = $this->filterData($this->getDeleteData(), [
+            'emails' => ['optional'],
+            'phones' => ['optional'],
+            'addresses' => ['optional'],
+            'social_networks' => ['optional']
+        ]);
 
          if(empty($data)) throw new ApiException('The data wasn\'t provided.', 400);
 
          foreach ($data as $table => $arr_id) $this->base_model->delete($table, $arr_id);
+
+        $this->createLog('removed a contact information');
 
          exit(json_encode(['status' => 'success']));
 
