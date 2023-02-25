@@ -152,7 +152,7 @@ class ProjectsController extends BaseAdmin
 
         http_response_code(201);
 
-        $data = ['id' => $id];
+        $data = ['status' => 'success', 'id' => $id];
 
         exit(json_encode($data));
 

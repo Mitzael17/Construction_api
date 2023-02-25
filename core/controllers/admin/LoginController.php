@@ -29,6 +29,14 @@ class LoginController extends BaseAdmin
 
         $ip = $_SERVER['REMOTE_ADDR'];
 
+        $attempts = $this->model->getAttempts($ip);
+
+        if($attempts >= LIMIT_ATTEMPTS) {
+
+            exit(json_encode(['status' => 'error', 'message' => 'The limit of attempts was exceeded']));
+
+        }
+
         $account = $this->model->getAccount($data['name']);
 
         if(!empty($account) && $data['password'] === $this->decrypt($account['password'])) {
@@ -45,14 +53,6 @@ class LoginController extends BaseAdmin
         }
 
         $date = date('Y-m-d H:i:s');
-
-        $attempts = $this->model->getAttempts($ip);
-
-        if($attempts >= LIMIT_ATTEMPTS) {
-
-            exit(json_encode(['status' => 'error', 'message' => 'The limit of attempts was exceeded']));
-
-        }
 
         $this->model->increaseAttempts($ip, $date);
 

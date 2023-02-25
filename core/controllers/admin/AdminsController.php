@@ -144,7 +144,7 @@ class AdminsController extends BaseAdmin
 
         $this->createLog('created a new admin - ' . $data['name']);
 
-        $data = ['id' => $id];
+        $data = ['status' => 'success', 'id' => $id];
 
         exit(json_encode($data));
 
@@ -218,7 +218,7 @@ class AdminsController extends BaseAdmin
             $not_removed = rtrim($not_removed, ', ');
 
             $data = [
-                'status' => 'partial success',
+                'status' => 'warning',
                 'not_removed' => $not_removed
             ];
 

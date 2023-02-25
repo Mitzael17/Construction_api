@@ -88,7 +88,9 @@ class RolesController extends BaseAdmin
             'work_with_messages' => ['necessary'],
             'work_with_admins' => ['necessary'],
             'priority' => ['necessary'],
-            'work_with_clients' => ['necessary']
+            'work_with_clients' => ['necessary'],
+            'work_with_news' => ['necessary'],
+            'work_with_contact_information' => ['necessary']
         ]);
 
         $this->checkRoleFlags($data);
@@ -99,7 +101,7 @@ class RolesController extends BaseAdmin
 
         $this->createLog('created a new role - ' . $data['name']);
 
-        $data = ['id' => $id];
+        $data = ['status' => 'success', 'id' => $id];
 
 
         exit(json_encode($data));
@@ -158,7 +160,7 @@ class RolesController extends BaseAdmin
 
             $not_removed = rtrim($not_removed, ', ');
 
-            $data = ['status' => 'partial success', 'not removed' => $not_removed];
+            $data = ['status' => 'warning', 'not removed' => $not_removed];
 
         } else {
             $data = ['status' => 'success'];
@@ -183,7 +185,7 @@ class RolesController extends BaseAdmin
 
         foreach ($available_flags as $flag => $value) {
 
-            if($flag === 'name' || $this->user[$flag]) continue;
+            if($flag === 'name' || $flag === 'priority' || $this->user[$flag]) continue;
 
             $unavailable_flags .= "$flag, ";
 

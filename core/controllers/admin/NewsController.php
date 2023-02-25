@@ -117,7 +117,7 @@ class NewsController extends BaseAdmin
 
         $this->createLog("created a new record in news ($name)");
 
-        exit(json_encode(['id' => $id]));
+        exit(json_encode(['status' => 'success', 'id' => $id]));
 
     }
 

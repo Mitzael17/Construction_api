@@ -78,7 +78,7 @@ class ServicesController extends BaseAdmin
 
         $this->createLog('created a new service - ' . $data['name']);
 
-        $data = ['id' => $id];
+        $data = ['status' => 'success', 'id' => $id];
 
         exit(json_encode($data));
 
@@ -126,7 +126,7 @@ class ServicesController extends BaseAdmin
         $this->createLog("$order_names $toBe removed from services");
 
         if(empty($not_deleted_service_id)) $data = ['status' => 'success'];
-        else $data = ['status' => 'partial success', 'not removed' => $not_deleted_service_id];
+        else $data = ['status' => 'warning', 'not removed' => $not_deleted_service_id];
 
         exit(json_encode($data));
 

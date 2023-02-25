@@ -20,6 +20,8 @@ abstract class BaseAdmin extends BaseController
 
         $this->method = strtolower($_SERVER['REQUEST_METHOD']);
 
+        if($this->method === 'options') exit(['status' => 'ok']);
+
         $this->protocol = $_SERVER['REQUEST_SCHEME'];
 
         $this->base_model = BaseModel::instance();
