@@ -32,7 +32,7 @@ class NewsController extends BaseAdmin
 
             $result = $this->model->get('news', $id);
 
-            if(!empty($result['image'])) $result['image'] = $this->createAliasForImage($result['image']);
+            if(!empty($result['image'])) $result['image'] = $this->createLinkForImage($result['image']);
 
             exit(json_encode($result));
 
@@ -44,7 +44,7 @@ class NewsController extends BaseAdmin
 
             foreach ($result as $key => $value) {
 
-                if(!empty($value['image'])) $result[$key]['image'] = $this->createAliasForImage($value['image']);
+                if(!empty($value['image'])) $result[$key]['image'] = $this->createLinkForImage($value['image']);
 
             }
 

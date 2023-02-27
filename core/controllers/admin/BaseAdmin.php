@@ -84,11 +84,7 @@ abstract class BaseAdmin extends BaseController
 
     protected function getDeleteArrId() {
 
-        if($this->method !== 'delete') throw new ApiException('the method is only for delete protocol.');
-
-        $arr_parameters = [];
-
-        parse_str($this->getContent(), $arr_parameters );
+        $arr_parameters = $this->getDeleteData();
 
         return $this->filterData($arr_parameters, [
             'id' => ['necessary']

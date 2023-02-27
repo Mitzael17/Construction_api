@@ -160,7 +160,7 @@ class RolesController extends BaseAdmin
 
             $not_removed = rtrim($not_removed, ', ');
 
-            $data = ['status' => 'warning', 'not removed' => $not_removed];
+            $data = ['status' => 'warning', 'message' => $not_removed];
 
         } else {
             $data = ['status' => 'success'];

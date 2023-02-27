@@ -30,7 +30,7 @@ class LogsController extends BaseAdmin
 
             if(empty($arr['admin']['image'])) continue;
 
-            $result[$key]['admin']['image'] = $this->createAliasForImage($arr['admin']['image']);
+            $result[$key]['admin']['image'] = $this->createLinkForImage($arr['admin']['image']);
 
         }
 

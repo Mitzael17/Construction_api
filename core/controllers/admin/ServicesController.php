@@ -126,7 +126,7 @@ class ServicesController extends BaseAdmin
         $this->createLog("$order_names $toBe removed from services");
 
         if(empty($not_deleted_service_id)) $data = ['status' => 'success'];
-        else $data = ['status' => 'warning', 'not removed' => $not_deleted_service_id];
+        else $data = ['status' => 'warning', 'message' => $not_deleted_service_id];
 
         exit(json_encode($data));
 

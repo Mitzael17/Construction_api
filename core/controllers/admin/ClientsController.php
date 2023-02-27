@@ -34,7 +34,7 @@ class ClientsController extends BaseAdmin
 
             $result = $this->model->getClient($id);
 
-            if(!empty($result['image'])) $result['image'] = $this->createAliasForImage($result['image']);
+            if(!empty($result['image'])) $result['image'] = $this->createLinkForImage($result['image']);
 
             $result['projects'] = ProjectModel::instance()->getProjects(['client_id' => $id]);
 
@@ -48,7 +48,7 @@ class ClientsController extends BaseAdmin
 
             foreach ($result as $key => $client) {
 
-                if(!empty($client['image'])) $result[$key]['image'] = $this->createAliasForImage($client['image']);
+                if(!empty($client['image'])) $result[$key]['image'] = $this->createLinkForImage($client['image']);
 
             }
 
@@ -142,7 +142,7 @@ class ClientsController extends BaseAdmin
         $this->createLog("$order_names $toBe removed from clients");
 
         if(empty($not_deleted_service_id)) $data = ['status' => 'success'];
-        else $data = ['status' => 'warning', 'not removed' => $not_deleted_service_id];
+        else $data = ['status' => 'warning', 'message' => $not_deleted_service_id];
 
         exit(json_encode($data));
 

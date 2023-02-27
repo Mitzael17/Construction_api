@@ -25,6 +25,8 @@ const UPLOAD_DIR = 'uploads/';
 
 const DEFAULT_STATUS_ID = 1;
 
+const EXTENSIONS_FILE = ['png' , 'jpg', 'jpeg', 'webp', 'svg', 'mp4', 'gif'];
+
 function autoloadClasses($classname) {
 
     $classname = str_replace('\\', '/', $classname);

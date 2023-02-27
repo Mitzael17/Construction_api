@@ -37,7 +37,7 @@ class AdminsController extends BaseAdmin
             if($this->user['id'] === $id) $result['password'] = $this->decrypt($result['password']);
             else unset($result['password']);
 
-            if(!empty($result['image'])) $result['image'] = $this->createAliasForImage($result['image']);
+            if(!empty($result['image'])) $result['image'] = $this->createLinkForImage($result['image']);
 
             exit(json_encode($result));
 
@@ -59,7 +59,7 @@ class AdminsController extends BaseAdmin
 
             if(!isset($arr['image']) || empty($arr['image'])) continue;
 
-            $result[$key]['image'] = $this->createAliasForImage($arr['image']);
+            $result[$key]['image'] = $this->createLinkForImage($arr['image']);
 
         }
 
@@ -219,7 +219,7 @@ class AdminsController extends BaseAdmin
 
             $data = [
                 'status' => 'warning',
-                'not_removed' => $not_removed
+                'message' => $not_removed
             ];
 
             exit(json_encode($data));

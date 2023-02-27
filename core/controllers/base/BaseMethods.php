@@ -15,7 +15,7 @@ trait BaseMethods
 
     }
 
-    protected function createAliasForImage($image) {
+    protected function createLinkForImage($image) {
 
         return $this->protocol . '://' . $_SERVER['SERVER_NAME'] . PATH . UPLOAD_DIR . $image;
 
