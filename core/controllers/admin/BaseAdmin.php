@@ -46,7 +46,9 @@ abstract class BaseAdmin extends BaseController
 
             if(!array_key_exists($key, $fieldsArr)) continue;
 
-            $result[$key] = $value;
+            if(is_string($value)) $result[$key] = addslashes($value);
+            elseif(is_array($value)) $result[$key] = $this->addslashesForArray($value);
+            else $result[$key] = $value;
 
         }
 
@@ -64,7 +66,7 @@ abstract class BaseAdmin extends BaseController
 
                 }
 
-                if(isset($value[1])) $result[$key] = $value[1];
+                if(isset($value[1])) $result[$key] = addslashes($value[1]);
 
             };
 
@@ -172,7 +174,7 @@ abstract class BaseAdmin extends BaseController
 
         $data['admin_id'] = $this->user['id'];
         $data['date_and_time'] = date('Y-m-d H:i:s');
-        $data['message'] = $message;
+        $data['message'] = addslashes($message);
 
         $this->base_model->create('logs', $data);
 

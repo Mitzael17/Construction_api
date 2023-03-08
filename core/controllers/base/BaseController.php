@@ -33,5 +33,20 @@ abstract class BaseController
 
     }
 
+    protected function addslashesForArray(array $arr) {
+
+        $result = [];
+
+        foreach ($arr as $key => $value) {
+
+            if(is_array($value)) $result[$key] = $this->addslashesForArray($value);
+            elseif (is_string($value)) $result[$key] = addslashes($value);
+            else $result[$key] = $value;
+
+        }
+
+        return $result;
+
+    }
 
 }

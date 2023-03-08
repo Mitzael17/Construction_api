@@ -127,7 +127,7 @@ class ProjectsController extends BaseAdmin
             if(!empty($edited_comment_args)) $this->model->updateComments($edited_comment_args);
             if(!empty($removed_comment_args)) $this->model->removeComments($removed_comment_args);
 
-            if(empty($project_args['name'])) $name = $this->model->getNameProjects([$id]);
+            if(empty($project_args['name'])) $name = $this->model->get('projects' , $id)['name'];
             else $name = $project_args['name'];
 
             $this->createLog('updated the project - ' . $name);

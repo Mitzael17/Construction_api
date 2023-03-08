@@ -22,6 +22,8 @@ class FilesController extends BaseAdmin
 
     private function get($args) {
 
+        if(isset($_GET['check_names'])) $this->checkNames();
+
         $dir = $_GET['dir'] ?? '';
 
         if(!file_exists(UPLOAD_DIR . $dir)) throw new RouteException('The directory doesn\'t exist');
@@ -43,7 +45,8 @@ class FilesController extends BaseAdmin
 
             $file = [
               'name' => $item,
-              'link' => $this->createLinkForImage($dir . $item)
+              'link' => $this->createLinkForImage($dir . $item),
+              'isImage' => exif_imagetype(UPLOAD_DIR . $dir . $item) || preg_match('/.svg$/', $item),
             ];
 
             $files[] = $file;
@@ -62,70 +65,9 @@ class FilesController extends BaseAdmin
 
     private function post() {
 
-        if(isset($_FILES['files'])) {
+        if(isset($_FILES['files'])) $this->uploadFiles();
 
-            $files_to_upload = [];
-            $not_uploaded = '';
-            $dir = $_POST['dir'] ?? '';
-
-            foreach ($_FILES['files']['name'] as $key => $fileName) {
-
-                if(isset($_POST['auto_rename']) && $_POST['auto_rename']) {
-
-                    $fileName = $this->changeFileName($fileName, $dir);
-
-                }
-                elseif(file_exists(UPLOAD_DIR . $dir . $fileName)) {
-
-                    $not_uploaded .= "$fileName, ";
-                    continue;
-
-                }
-
-                $files_to_upload[] = [
-                    'to' => UPLOAD_DIR . $dir . $fileName,
-                    'tmp' => $_FILES['files']['tmp_name'][$key]
-                ];
-
-            }
-
-            if(empty($files_to_upload) && !empty($not_uploaded)) throw new ApiException('The file(s) can\'t be upload. Rename it or turn on \'auto rename mode\'');
-
-            $log = 'Uploaded new files: ';
-
-            foreach ($files_to_upload as $file) {
-
-                move_uploaded_file($file['tmp'], $file['to']);
-
-                $log .= $file['to'] . ', ';
-
-            }
-
-            $this->createLog(rtrim($log, ', '));
-
-            if(!empty($not_uploaded)) {
-
-                $not_uploaded = rtrim($not_uploaded, ', ');
-
-                exit(json_encode(['status' => 'warning', 'message' => "The files can't be uploaded (rename it or turn on 'auto rename mode'): $not_uploaded"]));
-
-            }
-
-            exit(json_encode(['status' => 'success']));
-
-        }
-
-        if(isset($_POST['new_directory'])) {
-
-            if(is_dir(UPLOAD_DIR . $_POST['new_directory'])) throw new ApiException('The directory already exists');
-
-            mkdir(UPLOAD_DIR . $_POST['new_directory']);
-
-            $this->createLog('Created a new directory (' . $_POST['new_directory'] . ')');
-
-            exit(json_encode(['status' => 'success']));
-
-        }
+        if(isset($_POST['new_directory'])) $this->createFolders();
 
     }
 
@@ -133,9 +75,9 @@ class FilesController extends BaseAdmin
 
         $data = $this->getDeleteData();
 
-        $files = $this->filterData($data, [
-            'files' => ['necessary']
-        ])['files'];
+        if(!isset($data['files'])) throw new ApiException("The request must contain the parameters: files", 400);
+
+        $files = $data['files'];
 
         $message_for_folders = '';
         $message_for_files = '';
@@ -147,6 +89,8 @@ class FilesController extends BaseAdmin
                 $message_for_folders .= "$file, ";
 
                 $dir = UPLOAD_DIR . $file;
+
+                if($dir === UPLOAD_DIR) continue;
 
                 $it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
                 $files = new \RecursiveIteratorIterator($it,
@@ -184,6 +128,115 @@ class FilesController extends BaseAdmin
         if(!file_exists(UPLOAD_DIR . $dir . $fileName)) return $fileName;
 
         return $this->changeFileName(hash('crc32', time() . rand(0, 1000)) . "_$fileName", $dir);
+
+    }
+
+    private function uploadFiles() {
+
+        $files_to_upload = [];
+        $not_uploaded = '';
+        $dir = $_POST['dir'] ?? '';
+
+        $result = [
+            'files' => [],
+        ];
+
+        foreach ($_FILES['files']['name'] as $key => $fileName) {
+
+            if(isset($_POST['auto_rename']) && $_POST['auto_rename']) {
+
+                $fileName = $this->changeFileName($fileName, $dir);
+
+            }
+            elseif(file_exists(UPLOAD_DIR . $dir . $fileName)) {
+
+                $not_uploaded .= "$fileName, ";
+                continue;
+
+            }
+
+            $files_to_upload[] = [
+                'to' => UPLOAD_DIR . $dir . $fileName,
+                'tmp' => $_FILES['files']['tmp_name'][$key],
+                'name' => $fileName
+            ];
+
+        }
+
+        if(empty($files_to_upload) && !empty($not_uploaded)) throw new ApiException('The file(s) can\'t be upload. Rename it or turn on \'auto rename mode\'');
+
+        $log = 'Uploaded new files: ';
+
+        foreach ($files_to_upload as $file) {
+
+            move_uploaded_file($file['tmp'], $file['to']);
+
+            $result['files'][] = [
+                'name' => $file['name'],
+                'link' => $this->createLinkForImage($dir . $file['name']),
+                'isImage' => exif_imagetype(UPLOAD_DIR . $dir . $file['name']) || preg_match('/.svg$/', $file['name'])
+            ];
+
+            $log .= $file['to'] . ', ';
+
+        }
+
+        $this->createLog(rtrim($log, ', '));
+
+        if(!empty($not_uploaded)) {
+
+            $not_uploaded = addslashes(rtrim($not_uploaded, ', '));
+
+            $result = [
+                'status' => 'warning',
+                'message' => "The files can't be uploaded (rename it or turn on 'auto rename mode'): $not_uploaded",
+                'files' => $result['files']
+            ];
+
+            exit(json_encode($result));
+
+        }
+
+        $result['status'] = 'success';
+
+        exit(json_encode($result));
+
+    }
+
+    private function createFolders() {
+
+        if(is_dir(UPLOAD_DIR . $_POST['new_directory'])) throw new ApiException('The directory already exists');
+
+        mkdir(UPLOAD_DIR . $_POST['new_directory']);
+
+        $this->createLog('Created a new directory (' . $_POST['new_directory'] . ')');
+
+        exit(json_encode(['status' => 'success']));
+
+    }
+
+    private function checkNames() {
+
+        $files = $_GET['check_names'];
+        $dir = $_GET['dir'] ?? '';
+
+        $busy_names = [];
+
+        foreach ($files as $file) {
+
+            if(!file_exists(UPLOAD_DIR . $dir . $file)) continue;
+
+            $busy_names[] = $file;
+
+        }
+
+        if(!empty($busy_names)) {
+
+            exit(json_encode(['status' => 'warning', 'busy_names' => $busy_names]));
+
+        }
+
+        exit(json_encode(['status' => 'success']));
 
     }
 

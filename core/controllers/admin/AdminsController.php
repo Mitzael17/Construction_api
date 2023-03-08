@@ -150,8 +150,6 @@ class AdminsController extends BaseAdmin
 
     }
 
-
-
     private function delete($args) {
 
         $this->checkAccess('work_with_admins');
