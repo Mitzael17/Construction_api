@@ -283,4 +283,20 @@ class BaseModel
 
     }
 
+    public function getByData(string $table, array $data) {
+
+        $where = 'WHERE ';
+
+        foreach ($data as $key => $value) {
+
+            $where .= "$key='$value' AND ";
+
+        }
+
+        $where = rtrim($where, 'AND ');
+
+        return $this->query("SELECT * FROM $table $where");
+
+    }
+
 }

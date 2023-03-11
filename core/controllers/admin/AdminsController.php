@@ -26,6 +26,8 @@ class AdminsController extends BaseAdmin
 
         $id = isset($args[0]) ? $args[0] : '';
 
+        if(isset($_GET['check_name'])) $this->checkName();
+
         if(!empty($id)) {
 
             if($this->user['id'] !== $id && !$this->checkAccess('work_with_admins', true)) throw new ApiException('Access denied', 403);
@@ -228,6 +230,15 @@ class AdminsController extends BaseAdmin
 
         exit(json_encode($data));
 
+    }
+
+    private function checkName() {
+
+        $result = $this->model->getByData('admins', ['name' => $_GET['check_name']]);
+
+        if(empty($result) || $result[0]['id'] === $this->user['id']) exit(json_encode(['status' => 'success']));
+
+        exit(json_encode(['status' => 'error', 'message' => 'The name is already busy']));
     }
 
 }
