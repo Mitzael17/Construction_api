@@ -77,7 +77,7 @@ abstract class BaseAdmin extends BaseController
 
             $empty_fields = rtrim($empty_fields, ', ');
 
-            throw new ApiException("The request must contain the parameters: $empty_fields", 400);
+            throw new ApiException("The request must contain the parameters: $empty_fields");
 
         }
 

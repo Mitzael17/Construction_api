@@ -17,7 +17,7 @@ class MessageModel extends \core\models\base\BaseModel
         ];
 
         $limit = !empty($data['limit']) ? $data['limit'] : 20;
-        $page = !empty($data['page']) ? ($data['page'] - 1) * $data['limit'] : 0;
+        $page = !empty($data['page']) ? ($data['page'] - 1) * $limit : 0;
         $order = !empty($data['sort']) ? $data['sort'] : 'newest';
         $search = !empty($data['search']) ? $data['search'] : '';
         $from = !empty($data['date_from']) ? $data['date_from'] : '';

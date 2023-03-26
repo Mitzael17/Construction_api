@@ -13,35 +13,92 @@ class ProjectModel extends BaseModel
     public function getProjects($data) {
 
         $sortArr = [
-            'newest' => 'creation_date DESC',
-            'oldest' => 'creation_date',
+            'newest' => 'id DESC',
+            'oldest' => 'id ASC',
         ];
 
 
-        $limit = !empty($data['limit']) ? $data['limit'] : 20;
-        $page = !empty($data['page']) ? ($data['page'] - 1) * $data['limit'] : 0;
+        $limit = !empty($data['limit']) ? $data['limit'] : 50;
+        $page = !empty($data['page']) ? ($data['page'] - 1) * $limit : 0;
         $order = !empty($data['sort']) && isset($sortArr[$data['sort']]) ? 'ORDER BY ' . $sortArr[$data['sort']] : '';
         $search = !empty($data['search']) ? $data['search'] : '';
         $status_id = !empty($data['status_id']) ? $data['status_id'] : '';
         $client_id = !empty($data['client_id']) ? $data['client_id'] : '';
+        $service_id = !empty($data['service_id']) ? $data['service_id'] : '';
+
 
         $where = '';
         $join = 'INNER JOIN project_status as ps ON ps.id=p.project_status_id ';
         $join .=  'INNER JOIN services as s ON s.id=p.service_id ';
         $join .= 'INNER JOIN clients as c ON c.id=p.client_id';
 
-        if(!empty($status_id) || !empty($search) || !empty($client_id)) {
+        if(!empty($status_id) || !empty($search) || !empty($client_id) || !empty($service_id)) {
 
             $where = 'WHERE ';
 
             if(!empty($status_id)) {
-                $where .= "project_status_id=$status_id AND ";
+
+                if(is_array($status_id)) {
+
+                    $where .= '(';
+
+                    foreach($status_id as $id) {
+
+                        $where.= "project_status_id=$id OR ";
+
+                    }
+
+                    $where = rtrim($where, 'OR ') . ') AND ';
+
+                } else {
+                    $where .= "project_status_id=$status_id AND ";
+                }
+
+
             }
 
             if(!empty($client_id)) {
-                $where .= "client_id=$client_id AND ";
+
+
+                if(is_array($client_id)) {
+
+                    $where .= '(';
+
+                    foreach($client_id as $id) {
+
+                        $where.= "client_id=$id OR ";
+
+                    }
+
+                    $where = rtrim($where, 'OR ') . ') AND ';
+
+                } else {
+                    $where .= "client_id=$client_id AND ";
+                }
+
             }
 
+            if(!empty($service_id)) {
+
+
+                if(is_array($service_id)) {
+
+                    $where .= '(';
+
+                    foreach($service_id as $id) {
+
+                        $where.= "service_id=$id OR ";
+
+                    }
+
+                    $where = rtrim($where, 'OR ') . ') AND ';
+
+                } else {
+                    $where .= "service_id=$service_id AND ";
+                }
+
+            }
+            
             if(!empty($search)) $where .= "p.name LIKE '%$search%'";
 
             $where =  rtrim($where, ' AND ');

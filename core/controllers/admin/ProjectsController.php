@@ -164,19 +164,64 @@ class ProjectsController extends BaseAdmin
 
         $arr_id = $this->getDeleteArrId();
 
-        $order_names = $this->model->getNames('projects', $arr_id);
+        $records = $this->model->get('projects', $arr_id);
 
-        $toBe = count($order_names) > 1 ? 'were' : 'was';
+        $records = isset($records[0]) ? $records : [$records];
 
-        $order_names = rtrim(array_reduce($order_names, function ($ac, $cur) {
-            $name = $cur['name'];
-            return $ac . "$name, ";
-        }, ''), ', ');
 
+        $order_names = '';
+        $not_deleted = '';
+        $not_deleted_id = [];
+
+        foreach ($records as $key => $record) {
+
+            if(!empty($record['project_page_content_id'])) {
+
+                unset($arr_id[array_search($record['id'], $arr_id)]);
+                $not_deleted .= $record['name'] . ', ';
+                $not_deleted_id = $record['id'];
+                unset($records[$key]);
+
+            }
+
+        }
+
+        if(!empty($records)) {
+
+            $order_names = rtrim(array_reduce($records, function ($ac, $cur) {
+                $name = $cur['name'];
+                return $ac . "$name, ";
+            }, ''), ', ');
+
+        }
+
+        if(empty($arr_id)) {
+
+            exit(json_encode([
+                'status' => 'error',
+                'message' => 'The project(s) can\'t be removed',
+                'arr_id' => $not_deleted_id
+            ]));
+
+        }
+
+        $toBe = count($records) > 1 ? 'were' : 'was';
 
         $this->model->delete('projects', $arr_id);
 
         $this->createLog("$order_names $toBe removed from projects");
+
+        if(!empty($not_deleted)) {
+
+            $not_deleted = rtrim($not_deleted, ', ');
+
+            exit(json_encode([
+                'status' => 'warning',
+                'message' => 'The projects can\'t be removed: ' . $not_deleted,
+                'arr_id' => $not_deleted_id
+            ]));
+
+        }
 
         $data = ['status' => 'success'];
 

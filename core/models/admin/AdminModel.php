@@ -12,7 +12,7 @@ class AdminModel extends \core\models\base\BaseModel
     public function getAdmins($data) {
 
         $limit = !empty($data['limit']) ? $data['limit'] : 20;
-        $page = !empty($data['page']) ? ($data['page'] - 1) * $data['limit'] : 0;
+        $page = !empty($data['page']) ? ($data['page'] - 1) * $limit : 0;
         $search = !empty($data['search']) ? $data['search'] : '';
         $priority = $data['priority'];
 

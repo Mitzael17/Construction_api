@@ -129,7 +129,23 @@ class BaseModel
 
     protected function showTables() {
 
-        return $this->query("SHOW TABLES");
+        $tables =  $this->query('SHOW TABLES');
+
+        $key = '';
+
+        foreach ($tables[0] as $database => $value) {
+
+            $key = $database;
+
+            break;
+
+        }
+
+        $result = [];
+
+        foreach ($tables as $table) $result[] = $table[$key];
+
+        return $result;
 
     }
 
@@ -196,7 +212,7 @@ class BaseModel
 
         $result = $this->query("SELECT * FROM $table $where");
 
-        if(!empty($result) && !empty($id)) return $result[0];
+        if(!empty($result) && (!empty($id) && !is_array($id))) return $result[0];
 
         return $result;
 
@@ -283,7 +299,7 @@ class BaseModel
 
     }
 
-    public function getByData(string $table, array $data) {
+    public function getByData(string $table, array $data, int $limit = null) {
 
         $where = 'WHERE ';
 
@@ -293,9 +309,17 @@ class BaseModel
 
         }
 
+        $limit = '';
+
+        if($limit) {
+
+            $limit = "LIMIT $limit";
+
+        }
+
         $where = rtrim($where, 'AND ');
 
-        return $this->query("SELECT * FROM $table $where");
+        return $this->query("SELECT * FROM $table $where $limit");
 
     }
 

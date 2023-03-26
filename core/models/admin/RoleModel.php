@@ -19,7 +19,7 @@ class RoleModel extends \core\models\base\BaseModel
         ];
 
         $limit = !empty($data['limit']) ? $data['limit'] : 20;
-        $page = !empty($data['page']) ? ($data['page'] - 1) * $data['limit'] : 0;
+        $page = !empty($data['page']) ? ($data['page'] - 1) * $limit : 0;
         $order = !empty($data['sort']) && isset($sortArr[$data['sort']]) ? 'ORDER BY ' . $sortArr[$data['sort']] : '';
         $search = !empty($data['search']) ? $data['search'] : '';
 
