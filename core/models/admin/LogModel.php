@@ -11,6 +11,12 @@ class LogModel extends \core\models\base\BaseModel
 
     public function getLogs($data) {
 
+        $sortArr = [
+            'newest' => 'id DESC',
+            'oldest' => 'id ASC',
+        ];
+
+        $order = !empty($data['sort']) && isset($sortArr[$data['sort']]) ? 'ORDER BY ' . $sortArr[$data['sort']] : '';
         $limit = !empty($data['limit']) ? $data['limit'] : 20;
         $page = !empty($data['page']) ? ($data['page'] - 1) * $limit : 0;
         $search = !empty($data['search']) ? $data['search'] : '';
@@ -33,7 +39,7 @@ class LogModel extends \core\models\base\BaseModel
         $fields = "a.name as TABLE_admin_TABLE_name, a.image as TABLE_admin_TABLE_image, r.name as TABLE_admin_TABLE_role, l.message, l.date_and_time, l.id";
 
 
-        $response = $this->query("SELECT $fields FROM logs as l $join $where ORDER BY date_and_time DESC LIMIT $page, $limit");
+        $response = $this->query("SELECT $fields FROM logs as l $join $where $order LIMIT $page, $limit");
 
         $result = [];
 
