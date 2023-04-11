@@ -34,6 +34,8 @@ class LogsController extends BaseAdmin
 
         }
 
+        $result = $this->stringFieldsToInt($result);
+
         exit(json_encode($result));
 
     }

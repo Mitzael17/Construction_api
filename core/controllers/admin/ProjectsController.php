@@ -33,11 +33,27 @@ class ProjectsController extends BaseAdmin
 
             $data = $this->model->getProject($id);
 
+            $data = $this->stringFieldsToInt($data);
+
+            if(!empty($data['comments'])) {
+
+                foreach ($data['comments'] as $key => $comment) {
+
+                    if(empty($comment['admin_image'])) continue;
+
+                    $data['comments'][$key]['admin_image'] = $this->createLinkForImage($comment['admin_image']);
+
+                }
+
+            }
+
             exit(json_encode($data));
 
         }
 
         $data = $this->model->getProjects($_GET);
+
+        $data = $this->stringFieldsToInt($data);
 
         exit(json_encode($data));
 

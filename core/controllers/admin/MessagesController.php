@@ -32,11 +32,15 @@ class MessagesController extends BaseAdmin
 
             $result = $this->model->getMessage($id);
 
+            $result = $this->stringFieldsToInt($result);
+
             exit(json_encode($result));
 
         }
 
         $result = $this->model->getMessages($_GET);
+
+        $result = $this->stringFieldsToInt($result);
 
         exit(json_encode($result));
 

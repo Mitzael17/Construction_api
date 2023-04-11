@@ -24,17 +24,28 @@ class ServicesController extends BaseAdmin
 
     private function get($args) {
 
-        $id = isset($args[0]) ? $args[0] : '';
+        $id = '';
+        $isPageRequest = $args[0] === 'page';
+
+        if($isPageRequest) $id = $args[1];
+        else $id = $args[0];
 
         if(!empty($id)) {
 
-            $result = $this->model->getService($id);
+            $result = [];
+
+            if($isPageRequest) $result = $this->model->getServicePage($id);
+            else $result = $this->model->getService($id);
+
+            $result = $this->stringFieldsToInt($result);
 
             exit(json_encode($result));
 
         }
 
         $result = $this->model->getServices($_GET);
+
+        $result = $this->stringFieldsToInt($result);
 
         exit(json_encode($result));
 

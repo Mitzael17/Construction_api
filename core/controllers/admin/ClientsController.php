@@ -38,6 +38,8 @@ class ClientsController extends BaseAdmin
 
             $result['projects'] = ProjectModel::instance()->getProjects(['client_id' => $id]);
 
+            $result = $this->stringFieldsToInt($result);
+
             exit(json_encode($result));
 
         }
@@ -53,6 +55,8 @@ class ClientsController extends BaseAdmin
             }
 
         }
+
+        $result = $this->stringFieldsToInt($result);
 
         exit(json_encode($result));
 

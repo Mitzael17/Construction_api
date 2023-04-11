@@ -28,6 +28,8 @@ class InformationController extends BaseAdmin
         $data['emails'] = $this->base_model->get('emails');
         $data['social_networks'] = $this->base_model->get('social_networks');
 
+        $data = $this->stringFieldsToInt($data);
+
         exit(json_encode($data));
 
 

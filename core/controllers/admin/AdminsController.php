@@ -41,6 +41,8 @@ class AdminsController extends BaseAdmin
 
             if(!empty($result['image'])) $result['image'] = $this->createLinkForImage($result['image']);
 
+            $result = $this->stringFieldsToInt($result);
+
             exit(json_encode($result));
 
         }
@@ -64,6 +66,8 @@ class AdminsController extends BaseAdmin
             $result[$key]['image'] = $this->createLinkForImage($arr['image']);
 
         }
+
+        $result = $this->stringFieldsToInt($result);
 
         exit(json_encode($result));
 

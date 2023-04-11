@@ -33,11 +33,16 @@ class RolesController extends BaseAdmin
 
             $result = $this->model->getRole($id);
 
+            $result = $this->stringFieldsToInt($result);
+
             exit(json_encode($result));
 
         }
 
         $result = $this->model->getRoles($_GET);
+
+        $result = $this->stringFieldsToInt($result);
+
 
         exit(json_encode($result));
 
@@ -103,6 +108,7 @@ class RolesController extends BaseAdmin
 
         $data = ['status' => 'success', 'id' => $id];
 
+        $data = $this->stringFieldsToInt($data);
 
         exit(json_encode($data));
 

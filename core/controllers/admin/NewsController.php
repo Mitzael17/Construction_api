@@ -34,6 +34,8 @@ class NewsController extends BaseAdmin
 
             if(!empty($result['image'])) $result['image'] = $this->createLinkForImage($result['image']);
 
+            $result = $this->stringFieldsToInt($result);
+
             exit(json_encode($result));
 
         }
@@ -49,6 +51,8 @@ class NewsController extends BaseAdmin
             }
 
         }
+
+        $result = $this->stringFieldsToInt($result);
 
         exit(json_encode($result));
 

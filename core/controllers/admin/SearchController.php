@@ -34,6 +34,8 @@ class SearchController extends BaseAdmin
 
         $result = $this->model->search($data['table'], $data['field'], $data['value'], $data['limit']);
 
+        $result = $this->stringFieldsToInt($result);
+
         exit(json_encode($result));
 
     }

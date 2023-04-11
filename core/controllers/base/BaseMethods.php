@@ -50,4 +50,26 @@ trait BaseMethods
 
     }
 
+    protected function stringFieldsToInt(array $arr, array $except = ['password']): array {
+
+
+        foreach ($arr as $key => $value) {
+
+            if(is_array($value)) {
+                $arr[$key] = $this->stringFieldsToInt($value);
+                continue;
+            }
+
+            if(gettype($value) === 'string' && array_search($key, $except) === false && preg_match('/^\d+(\.\d+)?$/', $value)) {
+
+                $arr[$key] = (int) $value;
+
+            }
+
+        }
+
+        return $arr;
+
+    }
+
 }

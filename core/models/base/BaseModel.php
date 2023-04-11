@@ -2,6 +2,7 @@
 
 namespace core\models\base;
 
+use core\controllers\base\BaseMethods;
 use core\controllers\base\SingleTon;
 use core\exceptions\DbException;
 
@@ -9,6 +10,7 @@ class BaseModel
 {
 
     use SingleTon;
+    use BaseMethods;
 
     protected $db;
 
@@ -33,6 +35,7 @@ class BaseModel
         switch ($flag) {
 
             case 'r':
+
                 return $result->fetch_all(MYSQLI_ASSOC);
 
             case 'u':

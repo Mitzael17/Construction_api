@@ -2,6 +2,7 @@
 
 namespace core\models\admin;
 
+use core\exceptions\RouteException;
 use core\models\base\BaseModel;
 use core\controllers\base\SingleTon;
 
@@ -114,12 +115,13 @@ class ProjectModel extends BaseModel
 
     public function getProject($id) {
 
-        $query = "SELECT c.id as TABLE_client_TABLE_id, c.name as TABLE_client_TABLE_name, c.email as TABLE_client_TABLE_email, p.creation_date, 
+        $query = "SELECT c.id as TABLE_client_TABLE_id, c.name as TABLE_client_TABLE_name, p.id, p.creation_date, 
                   p.end_date, p.name, s.name as TABLE_service_TABLE_name, s.id as TABLE_service_TABLE_id,
                   ppc.alias, com.date as TABLE_comments_TABLE_date, com.id as TABLE_comments_TABLE_id, com.text as TABLE_comments_TABLE_text, 
                   com.admin_id as TABLE_comments_TABLE_admin_id, a.name as TABLE_comments_TABLE_admin_name, 
-                  a.image as TABLE_comments_TABLE_admin_image FROM projects as p 
-                  INNER JOIN clients as c ON c.id=p.client_id 
+                  a.image as TABLE_comments_TABLE_admin_image, ps.id as TABLE_status_TABLE_id, ps.name as TABLE_status_TABLE_name FROM projects as p 
+                  INNER JOIN clients as c ON c.id=p.client_id
+                  INNER JOIN project_status as ps ON ps.id=p.project_status_id
                   INNER JOIN services as s ON s.id=p.service_id 
                   LEFT JOIN project_page_content as ppc ON ppc.id=project_page_content_id
                   LEFT JOIN comments as com ON com.project_id=p.id
@@ -131,9 +133,11 @@ class ProjectModel extends BaseModel
         $result = [];
 
         if(!empty($response)) $result = $this->separateData($response);
+        else throw new RouteException('The project doesn\'t exist', 404);
 
        $result['client'] = $result['client'][0];
        $result['service'] = $result['service'][0];
+       $result['status'] = $result['status'][0];
 
         return $result;
 
