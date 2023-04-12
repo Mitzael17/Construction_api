@@ -21,7 +21,6 @@ const DELAY_ATTEMPTS = 3600;
 
 
 const ADMIN_PATH = 'admin';
-const UPLOAD_DIR = 'uploads/';
 
 const DEFAULT_STATUS_ID = 1;
 
@@ -40,3 +39,5 @@ function autoloadClasses($classname) {
 }
 
 spl_autoload_register('autoloadClasses');
+
+include 'vendor/autoload.php';

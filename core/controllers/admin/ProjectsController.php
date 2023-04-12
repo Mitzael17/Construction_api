@@ -31,21 +31,29 @@ class ProjectsController extends BaseAdmin
 
         if(!empty($id)) {
 
-            $data = $this->model->getProject($id);
+            if(isset($_GET['comments'])) {
 
-            $data = $this->stringFieldsToInt($data);
+                $result = $this->model->getComments($id, $_GET);
 
-            if(!empty($data['comments'])) {
+                if(!empty($result)) {
 
-                foreach ($data['comments'] as $key => $comment) {
+                    foreach ($result as $key => $comment) {
 
-                    if(empty($comment['admin_image'])) continue;
+                        if(empty($comment['admin_image'])) continue;
 
-                    $data['comments'][$key]['admin_image'] = $this->createLinkForImage($comment['admin_image']);
+                        $result[$key]['admin_image'] = $this->createLinkForImage($comment['admin_image']);
+
+                    }
 
                 }
 
+                exit(json_encode($result));
+
             }
+
+            $data = $this->model->getProject($id);
+
+            $data = $this->stringFieldsToInt($data);
 
             exit(json_encode($data));
 
