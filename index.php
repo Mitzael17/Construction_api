@@ -6,6 +6,8 @@ header("Access-Control-Allow-Headers: *");
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
 
+session_start();
+
 const ACCESS = true;
 
 require_once 'config.php';

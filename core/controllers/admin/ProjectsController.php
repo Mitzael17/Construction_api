@@ -37,6 +37,10 @@ class ProjectsController extends BaseAdmin
 
                 if(!empty($result)) {
 
+
+
+                    $result = $this->stringFieldsToInt($result);
+
                     foreach ($result as $key => $comment) {
 
                         if(empty($comment['admin_image'])) continue;

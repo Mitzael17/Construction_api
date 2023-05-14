@@ -175,7 +175,7 @@ class ProjectModel extends BaseModel
 
             $query = 'UPDATE comments SET ';
 
-            $where = 'WHERE ';
+            $where = ' WHERE ';
 
             foreach ($arr as $key => $value) {
 
@@ -224,11 +224,27 @@ class ProjectModel extends BaseModel
 
         $limit = !empty($data['limit']) ? $data['limit'] : 5;
         $page = !empty($data['page']) ? ($data['page'] - 1) * $limit : 0;
+        $where = "WHERE com.project_id=$id ";
 
+        $query = "SELECT com.id, com.text, com.admin_id, a.name, a.image as admin_image FROM comments as com INNER JOIN admins as a ON a.id=com.admin_id $where ORDER BY com.id DESC LIMIT $page, $limit";
 
-        $query = "SELECT com.id, com.text, com.admin_id, a.name, a.image as admin_image FROM comments as com INNER JOIN admins as a ON a.id=com.admin_id WHERE com.project_id=$id ORDER BY com.id DESC LIMIT $page, $limit";
+        $result = $this->query($query);
 
-        return $this->query($query);
+        if(!empty($result) && $_GET['skipComments']) {
+
+            $lastId = $result[count($result) - 1]['id'];
+
+            array_splice($result, 0, $_GET['skipComments']);
+
+            $where .= "AND com.id<$lastId ";
+
+            $query = "SELECT com.id, com.text, com.admin_id, a.name, a.image as admin_image FROM comments as com INNER JOIN admins as a ON a.id=com.admin_id $where ORDER BY com.id DESC LIMIT " . $_GET['skipComments'];
+
+            $result = array_merge($result, $this->query($query));
+
+        }
+
+        return $result;
 
     }
 
